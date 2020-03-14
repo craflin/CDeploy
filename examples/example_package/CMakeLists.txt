@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 cmake_policy(SET CMP0048 NEW)
 
-project(example_project2 VERSION 0.2.0)
+project(example_package VERSION 0.2.0)
 
 include(CDeploy)
 include(CPack)
@@ -33,6 +33,6 @@ install(DIRECTORY include
     DESTINATION .
 )
 install(EXPORT ${PROJECT_NAME}Config
-    DESTINATION lib/${PROJECT_NAME}
-    NAMESPACE example_project2::
+    DESTINATION lib/cmake/${PROJECT_NAME}
+    NAMESPACE example_package::
 )
