@@ -1,5 +1,5 @@
 
-function(deploy package version repository)
+function(deploy_package package version repository)
     find_package(${package} ${version} EXACT QUIET CONFIG)
     if(NOT ${package}_FOUND)
 

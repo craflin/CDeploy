@@ -2,7 +2,7 @@
 
 # CDeploy
 
-CDeploy is a simple CMake centric package manager and package format. It provides the CMake function `deploy` to download and unpack a ZIP file and uses `find_package` in *config mode* to import external libraries or tools provided by the ZIP file.
+CDeploy is a simple CMake centric package manager and package format. It provides the CMake function `deploy_package` to download and unpack a ZIP file and uses `find_package` in *config mode* to import external libraries or tools provided by the ZIP file.
 
 ## Example
 
@@ -15,8 +15,8 @@ project(example_project)
 
 include(CDeploy)
 
-deploy(Qt5 5.11.2 "http://my.example-package-repostory.com/packages")
-deploy(libxml2 2.7.8 "http://my.example-package-repostory.com/packages")
+deploy_package(Qt5 5.11.2 "http://my.example-package-repostory.com/packages")
+deploy_package(libxml2 2.7.8 "http://my.example-package-repostory.com/packages")
 
 add_executable(example_binary
     Main.cpp
