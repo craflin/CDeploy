@@ -5,7 +5,7 @@ option(BUILD_PACKAGE "Build a binary package that provide a Release and Debug bu
 
 project(example_package VERSION 0.1.0)
 
-include(CDeploy)
+include(../../CDeploy)
 include(CPack)
 
 if(BUILD_PACKAGE)
