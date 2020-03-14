@@ -4,7 +4,7 @@ project(example_project)
 
 include(CDeploy)
 
-deploy(example_package 0.1.0 https://github.com/craflin/CDeploy/releases/download/test)
+deploy(example_package 0.1.0 "https://github.com/craflin/CDeploy/releases/download/test")
 
 add_executable(example_binary
     src/Main.cpp

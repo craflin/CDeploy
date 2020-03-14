@@ -13,8 +13,8 @@ project(example_project)
 
 include(CDeploy)
 
-deploy(Qt5 5.11.2 http://my.example-package-repostory.com/packages)
-deploy(libxml2 2.7.8 http://my.example-package-repostory.com/packages)
+deploy(Qt5 5.11.2 "http://my.example-package-repostory.com/packages")
+deploy(libxml2 2.7.8 "http://my.example-package-repostory.com/packages")
 
 add_executable(example_binary
     Main.cpp
@@ -67,8 +67,8 @@ add_library(mylib STATIC
     include/MyLib.hpp
 )
 target_include_directories(mylib
-    PUBLIC $&lt;BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include&gt;
-    PUBLIC $&lt;INSTALL_INTERFACE:include&gt;
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>;
+    PUBLIC $<INSTALL_INTERFACE:include>;
 )
 
 add_executable(mytool
@@ -139,8 +139,8 @@ else()
         include/MyLib.hpp
     )
     target_include_directories(mylib
-        PUBLIC "$&lt;BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include&gt;"
-        PUBLIC "$&lt;INSTALL_INTERFACE:include&gt;"
+        PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+        PUBLIC "$<INSTALL_INTERFACE:include>"
     )
 
     add_executable(mytool
@@ -165,7 +165,7 @@ else()
     include(CMakePackageConfigHelpers)
     write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake" COMPATIBILITY ExactVersion)
     install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" DESTINATION "lib/cmake/${PROJECT_NAME}")
-    
+
 endif()
 ```
 
