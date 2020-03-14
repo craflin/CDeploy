@@ -11,7 +11,7 @@ cmake_minimum_required(VERSION 3.1)
 
 project(example_project)
 
-include(CMakeDeploy)
+include(CDeploy)
 
 deploy(Qt5 5.11.2 http://my.example-package-repostory.com/packages)
 deploy(libxml2 2.7.8 http://my.example-package-repostory.com/packages)
@@ -39,7 +39,7 @@ target_link_libraries(example_binary
 
 Example:
 
-libxml2-2.7.8-x64-gcc7.2.0-ubuntu16.04.zip
+libxml2-2.7.8-ubuntu16.04-x64-gcc7.2.0.zip
 
 ### Package Contents
 
@@ -49,7 +49,7 @@ Everything should be packaged in one directory with a unique name. This director
 
 ### Directly with CPack
 
-If you are building your project with CMake, you can create a CMake Deploy package using CPack.
+If you are building your project with CMake, you can create a CDeploy package using CPack.
 
 ```cmake
 cmake_minimum_required(VERSION 3.1)
@@ -60,41 +60,50 @@ project(example_project2 VERSION 0.2.0)
 include(CDeploy)
 include(CPack)
 
+set(CMAKE_DEBUG_POSTFIX d)
+
 add_library(mylib STATIC
     src/MyLib.cpp
     include/MyLib.hpp
 )
-target_include_directores(mylib
-    PUBLIC include 
+target_include_directories(mylib
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    PUBLIC $<INSTALL_INTERFACE:include>
 )
 
 add_executable(mytool
     src/Main.cpp
 )
 
-install(TARGETS mytool DESTINATION bin)
-install(TARGETS mylib DESTINATION lib)
-install(DIRECTORY include DESTINATION .)
-create export somehow
+install(TARGETS mytool
+    DESTINATION bin
+    EXPORT ${PROJECT_NAME}Config
+)
+install(TARGETS mylib
+    DESTINATION lib
+    EXPORT ${PROJECT_NAME}Config
+)
+install(DIRECTORY include
+    DESTINATION .
+)
+install(EXPORT ${PROJECT_NAME}Config
+    DESTINATION lib/${PROJECT_NAME}
+    NAMESPACE example_project2::
+)
+```
+
+The package is then generated using the `package` target in CMake.
+
+If you want to create a package with multiple configurations (e.g. Release and Debug) you will need a CMake project dedicated to build the package:
+
+```cmake
+todo
 ```
 
 ### From an External Project
 
 ```cmake
-cmake_minimum_required(VERSION 3.1)
-cmake_policy(SET CMP0048 NEW)
-
-project(example_project2 VERSION 0.2.0)
-
-include(CMakeDeploy)
-include(CPack)
-
-ExternalProject_Add(libmicrohttp ...)
-
-install(TARGETS mytool DESTINATION bin)
-install(TARGETS mylib DESTINATION lib)
-install(DIRECTORY include DESTINATION .)
-create export somehow
+todo
 ```
 
 

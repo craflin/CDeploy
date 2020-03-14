@@ -6,6 +6,8 @@ project(example_project2 VERSION 0.2.0)
 include(CDeploy)
 include(CPack)
 
+set(CMAKE_DEBUG_POSTFIX d)
+
 add_library(mylib STATIC
     src/MyLib.cpp
     include/MyLib.hpp
