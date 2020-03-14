@@ -3,14 +3,14 @@ cmake_policy(SET CMP0048 NEW)
 
 option(BUILD_PACKAGE "Build a binary package that provide a Release and Debug build" OFF)
 
-project(example_package VERSION 0.2.0)
+project(example_package VERSION 0.1.0)
 
 include(CDeploy)
 include(CPack)
 
 if(BUILD_PACKAGE)
 
-include(ExternalProject)
+    include(ExternalProject)
 
     ExternalProject_Add(release
         SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -40,8 +40,8 @@ else()
         include/MyLib.hpp
     )
     target_include_directories(mylib
-        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        PUBLIC $<INSTALL_INTERFACE:include>
+        PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+        PUBLIC "$<INSTALL_INTERFACE:include>"
     )
 
     add_executable(mytool
@@ -60,8 +60,11 @@ else()
         DESTINATION .
     )
     install(EXPORT ${PROJECT_NAME}Config
-        DESTINATION lib/cmake/${PROJECT_NAME}
+        DESTINATION "lib/cmake/${PROJECT_NAME}"
         NAMESPACE example_package::
     )
+    include(CMakePackageConfigHelpers)
+    write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake" COMPATIBILITY ExactVersion)
+    install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" DESTINATION "lib/cmake/${PROJECT_NAME}")
 
 endif()
