@@ -2,7 +2,7 @@
 
 # CDeploy
 
-CDeploy is a simple CMake centric package manager and package format. It provides the CMake function `deploy_package` to download and unpack a ZIP file and uses `find_package` in *config mode* to import external libraries or tools provided by the ZIP file.
+CDeploy is a simple CMake centric package manager and package format. It provides the CMake function `deploy_package` to download and unpack a ZIP file and uses `find_package` in *config mode* to import external pre-build libraries or tools provided by the ZIP file.
 
 ## Example
 
@@ -185,4 +185,8 @@ cmake --build /your/project/dir --target package
 
 ## Project History
 
-This project is heavily inspired by Daniel Pfeifer's [Effective CMake](https://github.com/boostcon/cppnow_presentations_2017/blob/master/05-19-2017_friday/effective_cmake__daniel_pfeifer__cppnow_05-19-2017.pdf) ([video](https://www.youtube.com/watch?v=bsXLMQ6WgIk)) presentation at [C++Now 2017](https://github.com/boostcon/cppnow_presentations_2017). I have used the CMake package downloading approach in the past few years, but this is my first attempt at formalizing the package format and providing CMake functions to create them. Thanks the CMake knowledge I gathered over the years it took just about two days to get this into a usable state.
+This project is heavily inspired by Daniel Pfeifer's [Effective CMake](https://github.com/boostcon/cppnow_presentations_2017/blob/master/05-19-2017_friday/effective_cmake__daniel_pfeifer__cppnow_05-19-2017.pdf) ([video](https://www.youtube.com/watch?v=bsXLMQ6WgIk)) presentation at [C++Now 2017](https://github.com/boostcon/cppnow_presentations_2017). The package downloading approach is something that I have already used for years, but this is my first attempt at formalizing the package format and providing CMake functions to create them. Thanks to the CMake knowledge I gathered in the past it took just about two days to get this project into a usable state.
+
+## Related Projects
+
+Similar projects are [Hunter](https://hunter.readthedocs.io) and other C++ package managers like [Conan](https://conan.io) and [Vcpkg](https://github.com/microsoft/vcpkg). (Please let me know about other projects that I should add to this list). Hunter seems to be very similar but it relies an globally accessible resources (as far as I understand it) and focuses on pre-build (or integrated) open source software packages. Conan and Vcpkg are external tools that operate on top of CMake and hence will introduce another tool dependency to you build tool set.
