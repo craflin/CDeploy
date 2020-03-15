@@ -156,19 +156,31 @@ endif()
 
 file(REMOVE "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in")
 
+function(deploy_export_init)
+
+    if(NOT EXISTS "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in")
+        file(WRITE "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "@PACKAGE_INIT@\n\n")
+        file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "set_and_check(INSTALL_DIR \"@PACKAGE_INSTALL_DIR@\")\n\n")
+        file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "include(CMakeFindDependencyMacro)\n\n")
+    endif()
+
+endfunction()
+
+function(deploy_export_dependency name)
+    deploy_export_init()
+    file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "find_dependency(${name})\n\n")
+endfunction()
+
 function(deploy_export name)
 
     include(CMakeParseArguments)
 
     set(options LIBRARY STATIC SHARED EXECUTABLE)
     set(oneValueArgs CONFIGURATION IMPORTED_LOCATION IMPORTED_IMPLIB)
-    set(multiValueArgs INTERFACE_INCLUDE_DIRECTORIES)
+    set(multiValueArgs INTERFACE_INCLUDE_DIRECTORIES PROPERTIES)
     cmake_parse_arguments(_ "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    if(NOT EXISTS "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in")
-        file(WRITE "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "@PACKAGE_INIT@\n\n")
-        file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "set_and_check(INSTALL_DIR \"@PACKAGE_INSTALL_DIR@\")\n\n")
-    endif()
+    deploy_export_init()
 
     set(target_flags)
     if(__STATIC)
@@ -195,8 +207,8 @@ function(deploy_export name)
         endforeach()
         set(target_properties "${target_properties}\"")
     endif()
-    if(__UNPARSED_ARGUMENTS)
-        foreach(arg ${__UNPARSED_ARGUMENTS})
+    if(__PROPERTIES)
+        foreach(arg ${__PROPERTIES})
             set(target_properties "${target_properties} ${arg}")
         endforeach()
     endif()

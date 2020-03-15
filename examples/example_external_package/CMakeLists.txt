@@ -47,12 +47,15 @@ if(MSVC)
         INTERFACE_INCLUDE_DIRECTORIES "include"
     )
 else()
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/build-release/src/Release/libnstd.a"
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/build-release/src/libnstd.a"
         DESTINATION lib
     )
+    deploy_export_dependency(Threads)
     deploy_export(libnstd LIBRARY STATIC
         IMPORTED_LOCATION "lib/libnstd.a"
         INTERFACE_INCLUDE_DIRECTORIES "include"
+        PROPERTIES
+            INTERFACE_LINK_LIBRARIES Threads::Threads
     )
 endif()
 
