@@ -95,14 +95,14 @@ The package is then generated using the `package` target in CMake.
 cmake --build /your/projectr/dir --target package
 ```
 
-On Visual Studio, you will have to compile the `DEBUG_BUILD` target first to ensure that a debug is available for packaging.
+On Visual Studio, you will have to compile the `DEBUG_BUILD` target first to ensure that a debug is available for packaging. Then build the `package` in `Release` configuration.
 
 ```
 cmake --build /your/projectr/dir --target DEBUG_BUILD
-cmake --build /your/projectr/dir --target package
+cmake --build /your/projectr/dir --target package --config Release
 ```
 
-Alternatively, you can configure the project with `-DCDEPLOY=ON` to skip this step.
+Alternatively, you can configure the project with `-DCDEPLOY_DEBUG_BUILD=ON` to skip the `DEBUG_BUILD` step.
 
 ### From an External Project
 
