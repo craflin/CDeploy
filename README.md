@@ -53,6 +53,8 @@ Everything should be packaged in one directory with a unique name. This director
 
 If you are building your project with CMake, you can create a CDeploy package with exported targets and CPack. In Visual Studio builds, it will include a debug and release version of libraries.
 
+Example:
+
 ```cmake
 cmake_minimum_required(VERSION 3.1)
 cmake_policy(SET CMP0048 NEW)
@@ -95,7 +97,7 @@ The package is then generated using the `package` target in CMake.
 cmake --build /your/projectr/dir --target package
 ```
 
-On Visual Studio, you will have to compile the `DEBUG_BUILD` target first to ensure that a debug is available for packaging. Then build the `package` in `Release` configuration.
+With Visual Studio, you will have to compile the `DEBUG_BUILD` target first to ensure that a debug is available for packaging. Then build the `package` in `Release` configuration.
 
 ```
 cmake --build /your/projectr/dir --target DEBUG_BUILD
