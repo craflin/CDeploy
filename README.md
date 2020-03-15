@@ -51,35 +51,32 @@ Everything should be packaged in one directory with a unique name. This director
 
 ### Directly with CMake/CPack
 
-If you are building your project with CMake, you can create a CDeploy package using CPack.
+If you are building your project with CMake, you can create a CDeploy package with exported targets and CPack. In Visual Studio builds, it will include a debug and release version of libraries.
 
 ```cmake
 cmake_minimum_required(VERSION 3.1)
 cmake_policy(SET CMP0048 NEW)
 
-project(example_package VERSION 0.2.0)
+project(example_package VERSION 0.1.0)
 
 include(CDeploy)
 include(CPack)
 
-set(CMAKE_DEBUG_POSTFIX d)
+add_executable(mytool
+    src/Main.cpp
+)
+install(TARGETS mytool
+    DESTINATION bin
+    EXPORT ${PROJECT_NAME}Config
+)
 
 add_library(mylib STATIC
     src/MyLib.cpp
     include/MyLib.hpp
 )
 target_include_directories(mylib
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>;
-    PUBLIC $<INSTALL_INTERFACE:include>;
-)
-
-add_executable(mytool
-    src/Main.cpp
-)
-
-install(TARGETS mytool
-    DESTINATION bin
-    EXPORT ${PROJECT_NAME}Config
+    PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    PUBLIC "$<INSTALL_INTERFACE:include>"
 )
 install(TARGETS mylib
     DESTINATION lib
@@ -88,91 +85,24 @@ install(TARGETS mylib
 install(DIRECTORY include
     DESTINATION .
 )
-install(EXPORT ${PROJECT_NAME}Config
-    DESTINATION lib/${PROJECT_NAME}
-    NAMESPACE example_package::
-)
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake" COMPATIBILITY ExactVersion)
-install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" DESTINATION "lib/cmake/${PROJECT_NAME}")
+
+install_deploy_export()
 ```
 
 The package is then generated using the `package` target in CMake.
 
-If you want to create a package with multiple configurations (e.g. Release and Debug) you will need a to build both configurations individually. This can be done with a CMake project dedicated to building the package or using CMake option and `ExternalProject_Add`:
-
-```cmake
-cmake_minimum_required(VERSION 3.1)
-cmake_policy(SET CMP0048 NEW)
-
-option(BUILD_PACKAGE "Build a binary package that provide a Release and Debug build" OFF)
-
-project(example_package VERSION 0.2.0)
-
-include(CDeploy)
-include(CPack)
-
-if(BUILD_PACKAGE)
-
-    include(ExternalProject)
-
-    ExternalProject_Add(release
-        SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
-        BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/extern-release"
-        CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/install-release"
-        BUILD_COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}/extern-release" --config Release
-        INSTALL_COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}/extern-release" --config Release --target install
-    )
-
-    ExternalProject_Add(debug
-        SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
-        BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/extern-debug"
-        CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/install-debug"
-        BUILD_COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}/extern-debug" --config Debug
-        INSTALL_COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}/extern-debug" --config Debug --target install
-    )
-
-    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/install-debug/" DESTINATION . USE_SOURCE_PERMISSIONS)
-    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/install-release/" DESTINATION . USE_SOURCE_PERMISSIONS)
-
-else()
-
-    set(CMAKE_DEBUG_POSTFIX d)
-
-    add_library(mylib STATIC
-        src/MyLib.cpp
-        include/MyLib.hpp
-    )
-    target_include_directories(mylib
-        PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-        PUBLIC "$<INSTALL_INTERFACE:include>"
-    )
-
-    add_executable(mytool
-        src/Main.cpp
-    )
-
-    install(TARGETS mytool
-        DESTINATION bin
-        EXPORT ${PROJECT_NAME}Config
-    )
-    install(TARGETS mylib
-        DESTINATION lib
-        EXPORT ${PROJECT_NAME}Config
-    )
-    install(DIRECTORY include
-        DESTINATION .
-    )
-    install(EXPORT ${PROJECT_NAME}Config
-        DESTINATION "lib/cmake/${PROJECT_NAME}"
-        NAMESPACE example_package::
-    )
-    include(CMakePackageConfigHelpers)
-    write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake" COMPATIBILITY ExactVersion)
-    install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" DESTINATION "lib/cmake/${PROJECT_NAME}")
-
-endif()
 ```
+cmake --build /your/projectr/dir --target package
+```
+
+On Visual Studio, you will have to compile the `DEBUG_BUILD` target first to ensure that a debug is available for packaging.
+
+```
+cmake --build /your/projectr/dir --target DEBUG_BUILD
+cmake --build /your/projectr/dir --target package
+```
+
+Alternatively, you can configure the project with `-DCDEPLOY=ON` to skip this step.
 
 ### From an External Project
 
