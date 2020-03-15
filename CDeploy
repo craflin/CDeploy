@@ -1,5 +1,13 @@
 
 function(deploy_package package version repository)
+    if(MSVC)
+        foreach(config ${CMAKE_CONFIGURATION_TYPES})
+            if(NOT "${config}" STREQUAL "Debug")
+                string(TOUPPER "${config}" config_upper)
+                set(CMAKE_MAP_IMPORTED_CONFIG_${config_upper} Release)
+            endif()
+        endforeach()
+    endif()
     find_package(${package} ${version} EXACT QUIET CONFIG)
     if(NOT ${package}_FOUND)
 

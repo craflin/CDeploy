@@ -6,7 +6,7 @@ CDeploy is a simple CMake centric package manager and package format. It provide
 
 ## Example
 
-Add the [CDeploy](/CDeploy) to your CMake project and create a `CMakeLists.txt` file like this:
+Add the [CDeploy](/CDeploy) file to your CMake project and create a `CMakeLists.txt` file like this:
 
 ```cmake
 cmake_minimum_required(VERSION 3.1)
@@ -47,7 +47,7 @@ libxml2-2.7.8-ubuntu16.04-x64-gcc7.2.zip
 
 Everything should be packaged in one directory with a unique name. This directory will be the argument for `PATHS` of `find_package`, so it should provide a CMake package configuration.
 
-## Creating a CMake Deploy Package
+## Creating a CDeploy Package
 
 ### Directly with CMake/CPack
 
