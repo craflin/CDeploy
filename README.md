@@ -15,8 +15,8 @@ project(example_project)
 
 include(CDeploy)
 
-deploy_package(Qt5 5.11.2 "http://my.example-package-repostory.com/packages")
-deploy_package(libxml2 2.7.8 "http://my.example-package-repostory.com/packages")
+deploy_package(Qt5 5.11.2 "http://my.example-package-repository.com/packages")
+deploy_package(libxml2 2.7.8 "http://my.example-package-repository.com/packages")
 
 add_executable(example_binary
     Main.cpp
@@ -45,7 +45,7 @@ libxml2-2.7.8-ubuntu16.04-x64-gcc7.2.zip
 
 ### Package Contents
 
-Everything should be packaged in one directory with a unique name. This directory will be the argument for `PATHS` of `find_package`, so it should provide a CMake package configuration.
+Everything should be packaged in one directory with a unique name. This directory will be the argument for `PATHS` of `find_package`, so it should provide a CMake package configuration with version information.
 
 ## Creating a CDeploy Package
 
@@ -94,14 +94,14 @@ install_deploy_export()
 The package is then generated using the `package` target in CMake.
 
 ```
-cmake --build /your/projectr/dir --target package
+cmake --build /your/project/dir --target package
 ```
 
 With Visual Studio, you will have to compile the `DEBUG_BUILD` target first to ensure that a debug is available for packaging. Then build the `package` in `Release` configuration.
 
 ```
-cmake --build /your/projectr/dir --target DEBUG_BUILD
-cmake --build /your/projectr/dir --target package --config Release
+cmake --build /your/project/dir --target DEBUG_BUILD
+cmake --build /your/project/dir --target package --config Release
 ```
 
 Alternatively, you can configure the project with `-DCDEPLOY_DEBUG_BUILD=ON` to skip the `DEBUG_BUILD` step.

@@ -139,6 +139,7 @@ if(MSVC AND NOT CDEPLOY_CREATING_DEBUG_BUILD)
         BUILD_COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}/build-debug" --config Debug
         INSTALL_COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}/build-debug" --config Debug --target install
     )
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/install-debug")
     install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/install-debug/" DESTINATION . USE_SOURCE_PERMISSIONS)
 
     set_property(TARGET DEBUG_BUILD PROPERTY FOLDER ".cmake")
@@ -153,12 +154,87 @@ if(MSVC)
     set(CMAKE_DEBUG_POSTFIX d)
 endif()
 
+file(REMOVE "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in")
+
+function(deploy_export name)
+
+    include(CMakeParseArguments)
+
+    set(options LIBRARY STATIC SHARED EXECUTABLE)
+    set(oneValueArgs CONFIGURATION IMPORTED_LOCATION IMPORTED_IMPLIB)
+    set(multiValueArgs INTERFACE_INCLUDE_DIRECTORIES)
+    cmake_parse_arguments(_ "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    if(NOT EXISTS "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in")
+        file(WRITE "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "@PACKAGE_INIT@\n\n")
+        file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "set_and_check(INSTALL_DIR \"@PACKAGE_INSTALL_DIR@\")\n\n")
+    endif()
+
+    set(target_flags)
+    if(__STATIC)
+        set(target_flags "${target_flags} STATIC")
+    endif()
+    if(__SHARED)
+        set(target_flags "${target_flags} SHARED")
+    endif()
+
+    set(target_config)
+    if(__CONFIGURATION)
+        string(TOUPPER "${__CONFIGURATION}" __CONFIGURATION)
+        set(target_config "_${__CONFIGURATION}")
+    endif()
+
+    set(target_properties)
+    if(__IMPORTED_LOCATION)
+        set(target_properties "${target_properties} IMPORTED_LOCATION${target_config} \"\${INSTALL_DIR}/${__IMPORTED_LOCATION}\"")
+    endif()
+    if(__INTERFACE_INCLUDE_DIRECTORIES)
+        set(target_properties "${target_properties} INTERFACE_INCLUDE_DIRECTORIES${target_config} \"")
+        foreach(dir ${__INTERFACE_INCLUDE_DIRECTORIES})
+            set(target_properties "${target_properties}\${INSTALL_DIR}/${dir};")
+        endforeach()
+        set(target_properties "${target_properties}\"")
+    endif()
+    if(__UNPARSED_ARGUMENTS)
+        foreach(arg ${__UNPARSED_ARGUMENTS})
+            set(target_properties "${target_properties} ${arg}")
+        endforeach()
+    endif()
+
+    file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "if(NOT TARGET ${PROJECT_NAME}::${name})\n")
+    if(__LIBRARY)
+        file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "    add_library(${PROJECT_NAME}::${name} ${target_flags} IMPORTED GLOBAL)\n")
+    else()
+        file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "    add_executable(${PROJECT_NAME}::${name} IMPORTED GLOBAL)\n")
+    endif()
+    file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "endif()\n")
+    file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "set_target_properties(${PROJECT_NAME}::${name}\n")
+    file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "    PROPERTIES\n")
+    file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "        ${target_properties}\n")
+    file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" ")\n")
+    if(__CONFIGURATION)
+        file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "set_property(TARGET ${PROJECT_NAME}::${name} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${__CONFIGURATION})\n")
+    endif()
+    file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "\n")
+
+endfunction()
+
 function(install_deploy_export)
-    install(EXPORT ${PROJECT_NAME}Config
-        DESTINATION "lib/cmake/${PROJECT_NAME}"
-        NAMESPACE ${PROJECT_NAME}::
-    )
     include(CMakePackageConfigHelpers)
+    if(EXISTS "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in")
+        set(INSTALL_DIR .)
+        configure_package_config_file("${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "${PROJECT_NAME}Config.cmake"
+            INSTALL_DESTINATION "lib/cmake/${PROJECT_NAME}"
+            PATH_VARS
+                INSTALL_DIR
+        )
+        install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION "lib/cmake/${PROJECT_NAME}")
+    else()
+        install(EXPORT ${PROJECT_NAME}Config
+            DESTINATION "lib/cmake/${PROJECT_NAME}"
+            NAMESPACE ${PROJECT_NAME}::
+        )
+    endif()
     write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake" COMPATIBILITY ExactVersion)
     install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" DESTINATION "lib/cmake/${PROJECT_NAME}")
 endfunction()
