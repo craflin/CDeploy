@@ -185,7 +185,7 @@ cmake --build /your/project/dir --target package
 
 ## Project History
 
-This project is heavily inspired by Daniel Pfeifer's [Effective CMake](https://github.com/boostcon/cppnow_presentations_2017/blob/master/05-19-2017_friday/effective_cmake__daniel_pfeifer__cppnow_05-19-2017.pdf) ([video](https://www.youtube.com/watch?v=bsXLMQ6WgIk)) presentation at [C++Now 2017](https://github.com/boostcon/cppnow_presentations_2017). The package downloading approach is something that I have already used for years, but this is my first attempt at formalizing the package format and providing CMake functions to create them. Thanks to the CMake knowledge I gathered in the past it took just about two days to get this project into a usable state.
+This project is heavily inspired by Daniel Pfeifer's [Effective CMake](https://github.com/boostcon/cppnow_presentations_2017/blob/master/05-19-2017_friday/effective_cmake__daniel_pfeifer__cppnow_05-19-2017.pdf) ([video](https://www.youtube.com/watch?v=bsXLMQ6WgIk)) presentation at [C++Now 2017](https://github.com/boostcon/cppnow_presentations_2017). The package downloading approach is something that I have already used for years, but this is my first attempt at formalizing the package format and providing CMake functions to create them.
 
 ## Related Projects
 
