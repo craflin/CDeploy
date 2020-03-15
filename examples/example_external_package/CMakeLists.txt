@@ -35,13 +35,25 @@ ExternalProject_Add(libnstd-release
     BUILD_COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}/build-release" --config Release
     INSTALL_COMMAND ${CMAKE_COMMAND} -E echo Skipped install
 )
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/build-release/src/Release/libnstd.lib"
-    DESTINATION lib
-)
 install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/source/include" DESTINATION .)
 
-deploy_export(libnstd LIBRARY STATIC
-    IMPORTED_LOCATION "lib/libnstd.lib"
-    INTERFACE_INCLUDE_DIRECTORIES "include"
-)
+if(MSVC)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/build-release/src/Release/libnstd.lib"
+        DESTINATION lib
+    )
+    deploy_export(libnstd LIBRARY STATIC
+        CONFIGURATION Release
+        IMPORTED_LOCATION "lib/libnstd.lib"
+        INTERFACE_INCLUDE_DIRECTORIES "include"
+    )
+else()
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/build-release/src/Release/libnstd.a"
+        DESTINATION lib
+    )
+    deploy_export(libnstd LIBRARY STATIC
+        IMPORTED_LOCATION "lib/libnstd.a"
+        INTERFACE_INCLUDE_DIRECTORIES "include"
+    )
+endif()
+
 install_deploy_export()
