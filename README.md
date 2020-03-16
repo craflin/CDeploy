@@ -118,7 +118,7 @@ Alternatively, you can configure the project with `-DCDEPLOY_DEBUG_BUILD=ON` to 
 
 ### From an External Project
 
-An external CMake project can be turned into a CDeploy package by compiling it with [ExternalProject_Add](https://cmake.org/cmake/help/latest/module/ExternalProject.html), attaching target importing rules and repackaging it with CPack.
+An external project can be turned into a CDeploy package by compiling it with [ExternalProject_Add](https://cmake.org/cmake/help/latest/module/ExternalProject.html), attaching target importing rules and repackaging it with CPack.
 
 Example:
 
@@ -195,9 +195,9 @@ The package can be built with:
 cmake --build /your/project/dir --target package
 ```
 
-### From an External Project with Self Provided `CMakeLists.txt`
+### From an External Project with Self Provided Build Rules
 
-If an external project is not build with CMake, it might be easier to provide your on CMake build rules to compile the project instead of using its build tool chain and repacking its artifacts. [ExternalProject_Add](https://cmake.org/cmake/help/latest/module/ExternalProject.html) can be used to import the sources of the external project.
+If an external project is not build with CMake, it might be easier to provide your own `CMakeLists.txt` to compile the project with CMake instead of using its build tool chain and repacking its artifacts. [ExternalProject_Add](https://cmake.org/cmake/help/latest/module/ExternalProject.html) can be used to import the sources of the external project.
 
 Example:
 
@@ -205,7 +205,7 @@ Example:
 cmake_minimum_required(VERSION 3.1)
 cmake_policy(SET CMP0048 NEW)
 
-project(libnstd VERSION 0.1.0)
+project(libfoo VERSION 0.1.0)
 
 include(CDeploy)
 include(CPack)
@@ -214,7 +214,7 @@ include(ExternalProject)
 ExternalProject_Add(sources
     GIT_REPOSITORY "https://github.com/bar/foo.git"
     GIT_SHALLOW True
-    FIT_TAG v${PROJECT_VERSION}
+    GIT_TAG v${PROJECT_VERSION}
     SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/source"
     BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/build"
     CONFIGURE_COMMAND ""
