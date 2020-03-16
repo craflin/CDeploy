@@ -49,9 +49,17 @@ Everything should be packaged in one directory with a unique name. This director
 
 ## Creating a CDeploy Package
 
+CDeploy packages can be created in various ways:
+
+* directly with CMake using exported targets and CPack (which is the preferred way).
+* from an external project that is built with or without CMake.
+* from an external project with self provided CMake build rules.
+
+Some projects may already produce a CDeploy compatible package that just need to be renamed to match the package naming conventions.
+
 ### Directly with CMake/CPack
 
-If you are building your project with CMake, you can create a CDeploy package with exported targets and CPack. In Visual Studio builds, it will include a debug and release version of libraries.
+If you are building your project with CMake and have control over the build rules of the project, you can create a CDeploy package with exported targets and CPack. In Visual Studio builds, it will include a debug and release version of libraries.
 
 Example:
 
@@ -108,7 +116,7 @@ Alternatively, you can configure the project with `-DCDEPLOY_DEBUG_BUILD=ON` to 
 
 ### From an External Project
 
-An external project can be build by compiling it with ExternalProject_Add, attaching imported target rules and repackaging it with CPack.
+An external CMake project can be turned into a CDeploy package by compiling it with [ExternalProject_Add](https://cmake.org/cmake/help/latest/module/ExternalProject.html), attaching target importing rules and repackaging it with CPack.
 
 Example:
 
@@ -129,7 +137,7 @@ if(MSVC)
         SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/source"
         BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/build-debug"
         BUILD_COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}/build-debug" --config Debug
-        INSTALL_COMMAND ${CMAKE_COMMAND} -E echo Skipped install
+        INSTALL_COMMAND ""
     )
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/build-debug/src/Debug/libnstd.lib"
         DESTINATION lib
@@ -177,11 +185,86 @@ endif()
 install_deploy_export()
 ```
 
+If the external project is not built with CMake you will have to customize the `CONFIGURE_COMMAND` and `BUILD_COMMAND` of `ExternalProject_Add`.
+
 The package can be built with:
 
 ```
 cmake --build /your/project/dir --target package
 ```
+
+### From an External Project with Self Provided `CMakeLists.txt`
+
+If an external project is not build with CMake, it might be easier to provide your on CMake build rules to compile the project instead of using its build tool chain and repacking its artifacts. [ExternalProject_Add](https://cmake.org/cmake/help/latest/module/ExternalProject.html) can be used to import the sources of the external project.
+
+Example:
+
+```cmake
+cmake_minimum_required(VERSION 3.1)
+cmake_policy(SET CMP0048 NEW)
+
+project(libnstd VERSION 0.1.0)
+
+include(CDeploy)
+include(CPack)
+include(ExternalProject)
+
+ExternalProject_Add(sources
+    GIT_REPOSITORY "https://github.com/bar/foo.git"
+    GIT_SHALLOW True
+    FIT_TAG v${PROJECT_VERSION}
+    SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/source"
+    BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/build"
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+)
+
+set(SOURCES
+    "${CMAKE_CURRENT_BINARY_DIR}/source/src/source_file1.cpp"
+    "${CMAKE_CURRENT_BINARY_DIR}/source/src/source_file2.cpp"
+    # ...
+)
+set_source_files_properties(${SOURCES}
+    PROPERTIES GENERATED True
+)
+
+add_library(foo STATIC
+    ${SOURCES}
+)
+add_dependency(foo
+    sources
+)
+
+target_include_directories(foo
+    PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/source/include>"
+    PUBLIC "$<INSTALL_INTERFACE:include>"
+)
+install(TARGETS foo
+    DESTINATION lib
+    EXPORT ${PROJECT_NAME}Config
+)
+install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/source/include"
+    DESTINATION .
+)
+
+install_deploy_export()
+```
+
+The package is then generated using the `package` target in CMake.
+
+```
+cmake --build /your/project/dir --target package
+```
+
+With Visual Studio, you will have to compile the `DEBUG_BUILD` target first to ensure that a debug is available for packaging. Then build the `package` in `Release` configuration.
+
+```
+cmake --build /your/project/dir --target DEBUG_BUILD
+cmake --build /your/project/dir --target package --config Release
+```
+
+Alternatively, you can configure the project with `-DCDEPLOY_DEBUG_BUILD=ON` to skip the `DEBUG_BUILD` step.
 
 ## Project History
 

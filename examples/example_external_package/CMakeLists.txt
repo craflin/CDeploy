@@ -14,7 +14,7 @@ if(MSVC)
         SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/source"
         BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/build-debug"
         BUILD_COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}/build-debug" --config Debug
-        INSTALL_COMMAND ${CMAKE_COMMAND} -E echo Skipped install
+        INSTALL_COMMAND ""
     )
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/build-debug/src/Debug/libnstd.lib"
         DESTINATION lib
