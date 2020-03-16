@@ -107,7 +107,7 @@ The package is then generated using the `package` target in CMake.
 cmake --build /your/project/dir --target package
 ```
 
-With Visual Studio, you will have to compile the `DEBUG_BUILD` target first to ensure that a debug is available for packaging. Then build the `package` in `Release` configuration.
+With Visual Studio, you will have to compile the target `DEBUG_BUILD` first to ensure that a debug is available for packaging. Then build the `package` in `Release` configuration.
 
 ```
 cmake --build /your/project/dir --target DEBUG_BUILD
@@ -259,7 +259,7 @@ The package is then generated using the `package` target in CMake.
 cmake --build /your/project/dir --target package
 ```
 
-With Visual Studio, you will have to compile the `DEBUG_BUILD` target first to ensure that a debug is available for packaging. Then build the `package` in `Release` configuration.
+With Visual Studio, you will have to compile the target `DEBUG_BUILD` first to ensure that a debug is available for packaging. Then build the `package` in `Release` configuration.
 
 ```
 cmake --build /your/project/dir --target DEBUG_BUILD
