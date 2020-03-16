@@ -2,7 +2,7 @@
 
 # CDeploy
 
-CDeploy is a simple CMake centric package manager and package format. It provides the CMake function `deploy_package` to download and unpack a ZIP file and uses `find_package` in *config mode* to import external pre-build libraries or tools provided by the ZIP file.
+CDeploy is a simple CMake centric package manager and package format. It provides the CMake function `deploy_package` to download and unpack a ZIP file and uses [find_package](https://cmake.org/cmake/help/latest/command/find_package.html) in *config mode* to import external pre-build libraries or tools provided by the ZIP file.
 
 ## Example
 
