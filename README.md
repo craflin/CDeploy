@@ -275,3 +275,10 @@ This project is heavily inspired by Daniel Pfeifer's [Effective CMake](https://g
 ## Related Projects
 
 Similar projects are [Hunter](https://hunter.readthedocs.io) and other C++ package managers like [Conan](https://conan.io) and [Vcpkg](https://github.com/microsoft/vcpkg). (Please let me know about other projects that I should add to this list). Hunter seems to be very similar but it relies an globally accessible resources (as far as I understand it) and focuses on pre-build (or integrated) open source software packages. Conan and Vcpkg are external tools that operate on top of CMake and hence will introduce another tool dependency to you build tool set.
+
+## TODO
+
+* Caching of downloaded packages to speed up *clean rebuild builds* in CI.
+* Add documentation of `deploy_package`, `deploy_export_dependency`, `deploy_export` and `install_deploy_export`.
+* Support CDeploy packages that use `deploy_package` to deploy dependencies.
+* Develop a concept to deal with diamond dependency problems with mismatching versions.
