@@ -11,7 +11,25 @@ function(deploy_package package version repository)
     find_package(${package} ${version} EXACT QUIET CONFIG)
     if(NOT ${package}_FOUND)
 
-        set(url "${repository}/${package}-${version}-${CDEPLOY_OS}-${CDEPLOY_ARCH}-${CDEPLOY_COMPILER}.zip")
+        include(CMakeParseArguments)
+
+        set(options NO_OS NO_ARCH NO_COMPILER)
+        set(oneValueArgs)
+        set(multiValueArgs)
+        cmake_parse_arguments(_ "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+        set(url "${repository}/${package}-${version}")
+        if(NOT __NO_OS)
+            set(url "${url}-${CDEPLOY_OS}")
+        endif()
+        if(NOT __NO_ARCH)
+            set(url "${url}-${CDEPLOY_ARCH}")
+        endif()
+        if(NOT __NO_COMPILER)
+            set(url "${url}-${CDEPLOY_COMPILER}")
+        endif()
+        set(url "${url}.zip")
+
         message("-- Downloading ${url}")
         get_filename_component(_filename "${url}" NAME)
         file(DOWNLOAD "${url}" "${CMAKE_BINARY_DIR}/${_filename}" STATUS download_status)
@@ -124,10 +142,18 @@ get_target_compiler(CDEPLOY_COMPILER)
 get_target_os(CDEPLOY_OS)
 
 set(CPACK_GENERATOR "ZIP")
-set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}-${CDEPLOY_OS}-${CDEPLOY_ARCH}-${CDEPLOY_COMPILER}")
+set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}")
+if(NOT CDEPLOY_NO_OS)
+    set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${CDEPLOY_OS}")
+endif()
+if(NOT CDEPLOY_NO_ARCH)
+    set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${CDEPLOY_ARCH}")
+endif()
+if(NOT CDEPLOY_NO_COMPILER)
+    set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${CDEPLOY_COMPILER}")
+endif()
 
-
-if(MSVC AND NOT CDEPLOY_CREATING_DEBUG_BUILD)
+if(MSVC AND NOT CDEPLOY_NO_DEBUG_BUILD)
 
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
     set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER ".cmake")
@@ -137,7 +163,7 @@ if(MSVC AND NOT CDEPLOY_CREATING_DEBUG_BUILD)
     ExternalProject_Add(DEBUG_BUILD
         SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
         BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/build-debug"
-        CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/install-debug" -DCDEPLOY_CREATING_DEBUG_BUILD=True
+        CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/install-debug" -DCDEPLOY_NO_DEBUG_BUILD=True
         BUILD_COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}/build-debug" --config Debug
         INSTALL_COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}/build-debug" --config Debug --target install
     )
@@ -150,6 +176,8 @@ if(MSVC AND NOT CDEPLOY_CREATING_DEBUG_BUILD)
         set_property(TARGET DEBUG_BUILD PROPERTY EXCLUDE_FROM_ALL True)
     endif()
 
+endif()
+if(CDEPLOY_DEBUG_BUILD)
 endif()
 
 if(MSVC)

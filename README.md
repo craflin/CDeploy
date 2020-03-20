@@ -128,6 +128,8 @@ cmake_policy(SET CMP0048 NEW)
 
 project(libnstd VERSION 0.1.0)
 
+set(CDEPLOY_NO_DEBUG_BUILD True)
+
 include(CDeploy)
 include(CPack)
 include(ExternalProject)
@@ -158,7 +160,7 @@ ExternalProject_Add(libnstd-release
     SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/source"
     BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/build-release"
     BUILD_COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}/build-release" --config Release
-    INSTALL_COMMAND ${CMAKE_COMMAND} -E echo Skipped install
+    INSTALL_COMMAND ""
 )
 install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/source/include" DESTINATION .)
 
@@ -267,6 +269,15 @@ cmake --build /your/project/dir --target package --config Release
 ```
 
 Alternatively, you can configure the project with `-DCDEPLOY_DEBUG_BUILD=ON` to skip the `DEBUG_BUILD` step.
+
+## CDeploy Options
+
+These options can be set before `include(CDeploy)` to configure the package creation.
+
+* `CDEPLOY_NO_DEBUG_BUILD` - Disable Debug build generation when creating a package with Visual Studio. This should be set if a debug build is not required or if the debug is already include in the package with explicit rules.
+* `CDEPLOY_NO_OS` - Do not include the operating name in the package name. This (and `CDEPLOY_NO_ARCH` and `CDEPLOY_NO_COMPILER`) is useful when creating an interface library package that can be used indepently of the operating system. Such a package can be deployed with `deploy_package` using the `NO_OS` option.
+* `CDEPLOY_NO_ARCH` - Do not include the package architecture in the package name. Such a package can be deployed with `deploy_package` using the `NO_ARCH` option.
+* `CDEPLOY_NO_COMPILER` - Do not include package compiler name and version in the package name. Such a package can be deployed with `deploy_package` using the `NO_COMPILER` option.
 
 ## Project History
 
