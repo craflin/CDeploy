@@ -2,9 +2,9 @@
 
 # CDeploy
 
-CDeploy is a simple CMake centric package manager and package format. It provides the CMake function `deploy_package` to download and unpack a ZIP file and uses [find_package](https://cmake.org/cmake/help/latest/command/find_package.html) in *config mode* to import external pre-build libraries or tools provided by the ZIP file.
+CDeploy is a simple CMake centric package manager and package format. It provides the CMake function `deploy_package` to download and unpack a ZIP file and uses [find_package](https://cmake.org/cmake/help/latest/command/find_package.html) in *config mode* to import external pre-build libraries, tools or other resources provided by the ZIP file.
 
-There is no global repository that provides packages, but if you are already familiar with modern CMake there is not much you need to learn to create your own CDeploy packages for your project.
+There is no global repository for packages, but if you are already familiar with modern CMake there is not much you need to learn to create your own CDeploy packages for your project.
 
 ## Example
 
@@ -33,13 +33,13 @@ target_link_libraries(example_binary
 
 ### Package Name
 
-&lt;name&gt;-&lt;version&gt;-&lt;os&gt;-&lt;arch&gt;-&lt;compiler&gt;.zip
+`<name>-<version>[-<os>][-<arch>][-<compiler>].zip`
 
-* &lt;name&gt; is the name of the imported product
-* &lt;version&gt; is a generic version string
-* &lt;os&gt; is the target operating system or distribution name and version
-* &lt;arch&gt; is the target architecture (x86, x64, ppc64, etc.)
-* &lt;compiler&gt; is a shorted name of the compiler with version number (gcc7.2, vs2015, etc.)
+* `<name>` is the name of the imported product
+* `<version>` is a generic version string
+* `<os>` is the target operating system or distribution name and version
+* `<arch>` is the target architecture (x86, x64, ppc64, etc.)
+* `<compiler>` is a shorted name of the compiler with version number (gcc7.2, vs2015, etc.)
 
 Example:
 
@@ -61,7 +61,7 @@ Some projects may already produce a CDeploy compatible package that just need to
 
 ### Directly with CMake/CPack
 
-If you are building your project with CMake and have control over the build rules of the project, you can create a CDeploy package with exported targets and CPack. In Visual Studio builds, it will include a debug and release version of libraries.
+If you are building your project with CMake and have control over the build rules (`CMakeLists.txt` files) of the project, you can create a CDeploy package with CPack by using [install(TARGET <name> ...)](https://cmake.org/cmake/help/latest/command/install.html) with the `EXPORT` option set to `${PROJECT_NAME}Config`. In Visual Studio builds, it will include a debug and release version of libraries.
 
 Example:
 
@@ -118,7 +118,7 @@ Alternatively, you can configure the project with `-DCDEPLOY_DEBUG_BUILD=ON` to 
 
 ### From an External Project
 
-An external project can be turned into a CDeploy package by compiling it with [ExternalProject_Add](https://cmake.org/cmake/help/latest/module/ExternalProject.html), attaching target importing rules and repackaging it with CPack.
+An external project can be turned into a CDeploy package by compiling it with [ExternalProject_Add](https://cmake.org/cmake/help/latest/module/ExternalProject.html), exporting its targets with `deploy_export` and repackaging it with CPack.
 
 Example:
 
@@ -199,7 +199,7 @@ cmake --build /your/project/dir --target package
 
 ### From an External Project with Self Provided Build Rules
 
-If an external project is not build with CMake, it might be easier to provide your own `CMakeLists.txt` to compile the project with CMake instead of using its build tool chain and repacking its artifacts. [ExternalProject_Add](https://cmake.org/cmake/help/latest/module/ExternalProject.html) can be used to import the sources of the external project.
+If an external project is not build with CMake, it might be easier to provide your own `CMakeLists.txt` file to compile the project with CMake instead of using its native build tool chain and repacking its artifacts. [ExternalProject_Add](https://cmake.org/cmake/help/latest/module/ExternalProject.html) can be used to import the sources of the external project. 
 
 Example:
 
@@ -270,12 +270,62 @@ cmake --build /your/project/dir --target package --config Release
 
 Alternatively, you can configure the project with `-DCDEPLOY_DEBUG_BUILD=ON` to skip the `DEBUG_BUILD` step.
 
+## CDeploy Functions
+
+### When Using CDeploy Packages
+
+#### `deploy_package`
+
+```
+deploy_package(<package_name> <version> <repository_url>
+    [NO_OS] [NO_ARCH] [NO_COMPILER])
+```
+
+The function downloads and unpacks a package file from the HTTP folder `<repository_url>` into the binary folder (`CMAKE_BINARY_DIR`) and uses CMake's [find_package](https://cmake.org/cmake/help/latest/command/find_package.html) in *config mode* to import the package.
+
+The package has to be named `<package_name>-<version>[-<target_os>][-<target_arch>][-<target_compiler>].zip` where `<target_os>`, `<target_arch>` and `<target_compiler>` can be omitted from the package file name using the options `NO_OS`, `NO_ARCH` and `NO_COMPILER`. `<target_os>`, `<target_arch>` and `<target_compiler>` are automatically detected in the local build environment.
+
+### When Creating CDeploy Packages
+
+#### `deploy_export`
+
+```
+deploy_export(<name> (INTERFACE | LIBRARY STATIC | LIBRARY SHARED | EXECUTABLE)
+    [IMPORTED_LOCATION <path>]
+    [CONFIGURATION (Release | Debug)]
+    [IMPORTED_IMPLIB <path>]
+    [INTERFACE_INCLUDE_DIRECTORIES <dir> ...]
+    [PROPERTIES <name> <value> ... ])
+```
+
+The function declares that an interface library (`INTERFACE`), static library (`LIBRARY STATIC`), shared library (`LIBRARY SHARED`) or executable (`EXECUTABLE`) can be found in the generated package.
+
+* `IMPORTED_LOCATION` sets the relative location of the static library, shared library or executable in the generated package.
+* `CONFIGURATION` can be used in Visual Studio builds with `CDEPLOY_NO_DEBUG_BUILD` option to declare if the exported library or executable is the Debug or Release version.
+* `IMPORTED_IMPLIB` sets the relative location in the generated package to a import library of a shared library.
+* `INTERFACE_INCLUDE_DIRECTORIES` sets the relative location to include directories of a interface, static or shared library in the generated package.
+* `PROPERTIES` sets additional properties (like `INTERFACE_LINK_LIBRARIES` etc.) of a imported library when it is deployed.
+
+#### `deploy_export_dependency`
+
+`deploy_export_dependency(<name> <flags>)`
+
+The function declares a dependency of the generated package that uses `deploy_export` . This dependency should be resolvable by using `find_package` when the package is deployed.
+
+#### `install_deploy_export`
+
+```
+install_deploy_export()
+```
+
+The function adds the export of installed targets or targets exported with `deploy_export` to the generated package.
+
 ## CDeploy Options
 
 These options can be set before `include(CDeploy)` to configure the package creation.
 
-* `CDEPLOY_NO_DEBUG_BUILD` - Disable Debug build generation when creating a package with Visual Studio. This should be set if a debug build is not required or if the debug is already include in the package with explicit rules.
-* `CDEPLOY_NO_OS` - Do not include the operating name in the package name. This (and `CDEPLOY_NO_ARCH` and `CDEPLOY_NO_COMPILER`) is useful when creating an interface library package that can be used indepently of the operating system. Such a package can be deployed with `deploy_package` using the `NO_OS` option.
+* `CDEPLOY_NO_DEBUG_BUILD` - Disable the debug build generation when creating a package with Visual Studio. This should be set if a debug build is not required or if the debug build is already included in the package with other build rules.
+* `CDEPLOY_NO_OS` - Do not include the operating name in the package name. This is usually combined with `CDEPLOY_NO_ARCH` and `CDEPLOY_NO_COMPILER` to create an interface library package or a package that provides some other resources that can be used independently of the operating system. Such a package can be deployed with `deploy_package` using the `NO_OS`, `NO_ARCH` and `NO_COMPILER` options.
 * `CDEPLOY_NO_ARCH` - Do not include the package architecture in the package name. Such a package can be deployed with `deploy_package` using the `NO_ARCH` option.
 * `CDEPLOY_NO_COMPILER` - Do not include package compiler name and version in the package name. Such a package can be deployed with `deploy_package` using the `NO_COMPILER` option.
 
@@ -290,6 +340,4 @@ Similar projects are [Hunter](https://hunter.readthedocs.io) and other C++ packa
 ## TODO
 
 * Caching of downloaded packages to speed up *clean rebuild builds* in CI.
-* Add documentation of `deploy_package`, `deploy_export_dependency`, `deploy_export` and `install_deploy_export`.
-* Support CDeploy packages that use `deploy_package` to deploy dependencies.
 * Develop a concept to deal with diamond dependency problems with mismatching versions.

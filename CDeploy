@@ -198,7 +198,7 @@ endfunction()
 
 function(deploy_export_dependency name)
     deploy_export_init()
-    file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "find_dependency(${name})\n\n")
+    file(APPEND "${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake.in" "find_dependency(${name} ${ARGN})\n\n")
 endfunction()
 
 function(deploy_export name)
