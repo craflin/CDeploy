@@ -310,7 +310,7 @@ The function declares that an interface library (`INTERFACE`), static library (`
 
 `deploy_export_dependency(<name> <flags>)`
 
-The function declares a dependency of the generated package that uses `deploy_export` . This dependency should be resolvable by using `find_package` when the package is deployed.
+The function declares a dependency of the generated package that uses `deploy_export` . This dependency should be resolvable by using `find_dependency(<name> <flags>)` when the package is deployed.
 
 #### `install_deploy_export`
 
@@ -329,6 +329,10 @@ These options can be set before `include(CDeploy)` to configure the package crea
 * `CDEPLOY_NO_ARCH` - Do not include the package architecture in the package name. Such a package can be deployed with `deploy_package` using the `NO_ARCH` option.
 * `CDEPLOY_NO_COMPILER` - Do not include package compiler name and version in the package name. Such a package can be deployed with `deploy_package` using the `NO_COMPILER` option.
 
+## Dealing with Diamond Dependency Problems
+
+The diamond dependency problems occurs if you have a dependency that depends on a package in a different version than another direct or indirect dependency on the same package. This can be avoided by not having dependencies in a package that rely on an exact version of a package. So, CDeploy packages should not use `deploy_package` to deploy dependencies but can use [find_dependency](https://cmake.org/cmake/help/latest/module/CMakeFindDependencyMacro.html) to ensure that a dependency is available. The dependencies should then be deployed by the the top level `CMakeLists.txt` file, which ensures that all packages use the same version of a dependency. This approach works as long as the dependency that is shared by multiple packages does not break its downwards compatibility. 
+
 ## Project History
 
 This project is heavily inspired by Daniel Pfeifer's [Effective CMake](https://github.com/boostcon/cppnow_presentations_2017/blob/master/05-19-2017_friday/effective_cmake__daniel_pfeifer__cppnow_05-19-2017.pdf) ([video](https://www.youtube.com/watch?v=bsXLMQ6WgIk)) presentation at [C++Now 2017](https://github.com/boostcon/cppnow_presentations_2017). The package downloading approach is something that I have already used for years, but this is my first attempt at formalizing the package format and providing CMake functions to create them.
@@ -340,4 +344,3 @@ Similar projects are [Hunter](https://hunter.readthedocs.io) and other C++ packa
 ## TODO
 
 * Caching of downloaded packages to speed up *clean rebuild builds* in CI.
-* Develop a concept to deal with diamond dependency problems with mismatching versions.
