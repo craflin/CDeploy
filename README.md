@@ -199,7 +199,7 @@ The package can be built with:
 cmake --build /your/project/dir --target package
 ```
 
-### From an External Project with Self Provided Build Rules
+### From an External Project with Customized Build Rules
 
 If an external project is not build with CMake, it might be easier to provide your own `CMakeLists.txt` file to compile the project with CMake instead of using its native build tool chain and repacking its artifacts. [ExternalProject_Add](https://cmake.org/cmake/help/latest/module/ExternalProject.html) can be used to import the sources of the external project. 
 
