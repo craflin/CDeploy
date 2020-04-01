@@ -1,5 +1,13 @@
 
 function(deploy_package package version repository)
+
+    include(CMakeParseArguments)
+
+    set(options NO_OS NO_ARCH NO_COMPILER NO_CACHE)
+    set(oneValueArgs)
+    set(multiValueArgs)
+    cmake_parse_arguments(_ "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
     if(MSVC)
         foreach(config ${CMAKE_CONFIGURATION_TYPES})
             if(NOT "${config}" STREQUAL "Debug")
@@ -8,15 +16,12 @@ function(deploy_package package version repository)
             endif()
         endforeach()
     endif()
-    find_package(${package} ${version} EXACT QUIET CONFIG)
+
+    if(NOT __NO_CACHE)
+        find_package(${package} ${version} EXACT QUIET CONFIG)
+    endif()
+
     if(NOT ${package}_FOUND)
-
-        include(CMakeParseArguments)
-
-        set(options NO_OS NO_ARCH NO_COMPILER)
-        set(oneValueArgs)
-        set(multiValueArgs)
-        cmake_parse_arguments(_ "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
         set(filename "${package}-${version}")
         if(NOT __NO_OS)
@@ -42,7 +47,7 @@ function(deploy_package package version repository)
         endif()
 
         set(cache_file "${CDEPLOY_CACHE_DIR}/${filename}")
-        if(EXISTS "${cache_file}")
+        if(NOT __NO_CACHE AND EXISTS "${cache_file}")
             message("-- Found ${filename} in cache")
         else()
             set(url "${repository}/${filename}")
