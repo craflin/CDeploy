@@ -330,6 +330,7 @@ These options can be set before `include(CDeploy)` to configure the package crea
 * `CDEPLOY_NO_OS` - Do not include the operating name in the package name. This is usually combined with `CDEPLOY_NO_ARCH` and `CDEPLOY_NO_COMPILER` to create an interface library package or a package that provides some other resources that can be used independently of the operating system. Such a package can be deployed with `deploy_package` using the `NO_OS`, `NO_ARCH` and `NO_COMPILER` options.
 * `CDEPLOY_NO_ARCH` - Do not include the package architecture in the package name. Such a package can be deployed with `deploy_package` using the `NO_ARCH` option.
 * `CDEPLOY_NO_COMPILER` - Do not include package compiler name and version in the package name. Such a package can be deployed with `deploy_package` using the `NO_COMPILER` option.
+* `CDEPLOY_CACHE_DIR` - Store downloaded packages in the given directory. The cache directory can also be set using an environment variable with the same name. The default value is `~/.cmake/downloadcache`.
 
 ## Dealing with Diamond Dependency Problems
 
@@ -342,7 +343,3 @@ This project is heavily inspired by Daniel Pfeifer's [Effective CMake](https://g
 ## Related Projects
 
 Similar projects are [Hunter](https://hunter.readthedocs.io) and other C++ package managers like [Conan](https://conan.io) and [Vcpkg](https://github.com/microsoft/vcpkg). (Please let me know about other projects that I should add to this list). Hunter seems to be very similar but it relies an globally accessible resources (as far as I understand it) and focuses on pre-build (or integrated) open source software packages. Conan and Vcpkg are external tools that operate on top of CMake and hence will introduce another tool dependency to you build tool set.
-
-## TODO
-
-* Caching of downloaded packages to speed up *clean rebuild builds* in CI.
