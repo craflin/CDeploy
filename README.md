@@ -37,7 +37,7 @@ target_link_libraries(example_binary
 
 `<name>-<version>[-<os>][-<arch>][-<compiler>].zip`
 
-* `<name>` is the name of the imported product
+* `<name>` is the name in lower case of the imported product
 * `<version>` is a generic version string
 * `<os>` is the target operating system or distribution name and version
 * `<arch>` is the target architecture (x86, x64, ppc64, etc.)
