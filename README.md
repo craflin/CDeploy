@@ -238,7 +238,7 @@ set_source_files_properties(${SOURCES}
 add_library(foo STATIC
     ${SOURCES}
 )
-add_dependency(foo
+add_dependencies(foo
     sources
 )
 
