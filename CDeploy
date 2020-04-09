@@ -18,7 +18,7 @@ function(deploy_package package version repository)
     endif()
 
     if(NOT __NO_CACHE)
-        find_package(${package} ${version} EXACT QUIET CONFIG)
+        find_package(${package} ${version} EXACT QUIET CONFIG NO_DEFAULT_PATH)
     endif()
 
     if(NOT ${package}_FOUND)
@@ -84,7 +84,7 @@ function(deploy_package package version repository)
         set(package_folder "${CMAKE_BINARY_DIR}/${_extract_dir}")
 
         find_package(${package} ${version} EXACT QUIET CONFIG REQUIRED
-            PATHS "${package_folder}"
+            PATHS "${package_folder}" NO_DEFAULT_PATH
         )
 
     endif()
