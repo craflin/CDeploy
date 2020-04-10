@@ -1,5 +1,5 @@
 
-function(deploy_package package version repository)
+function(deploy_package package version)
 
     include(CMakeParseArguments)
 
@@ -51,6 +51,16 @@ function(deploy_package package version repository)
         if(NOT __NO_CACHE AND EXISTS "${cache_file}")
             message("-- Found ${filename} in cache")
         else()
+
+            set(repository "${__UNPARSED_ARGUMENTS}")
+            if(NOT repository)
+                if(CDEPLOY_REPOSITORY)
+                    set(repository "${CDEPLOY_REPOSITORY}")
+                else()
+                    set(repository "$ENV{CDEPLOY_REPOSITORY}")
+                endif()
+            endif()
+
             set(url "${repository}/${filename}")
             message("-- Downloading ${url}")
             file(DOWNLOAD "${url}" "${cache_file}.part" STATUS download_status)

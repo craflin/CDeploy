@@ -279,11 +279,11 @@ Alternatively, you can configure the project with `-DCDEPLOY_DEBUG_BUILD=ON` to 
 #### `deploy_package`
 
 ```
-deploy_package(<package_name> <version> <repository_url>
+deploy_package(<package_name> <version> [<repository_url>]
     [NO_OS] [NO_ARCH] [NO_COMPILER] [NO_CACHE])
 ```
 
-The function downloads and unpacks a package file from the HTTP folder `<repository_url>` into the binary folder (`CMAKE_BINARY_DIR`) and uses CMake's [find_package](https://cmake.org/cmake/help/latest/command/find_package.html) in *config mode* to import the package.
+The function downloads and unpacks a package file from the HTTP folder `<repository_url>` or an URL defined with `CDEPLOY_REPOSITORY` into the binary folder (`CMAKE_BINARY_DIR`) and uses CMake's [find_package](https://cmake.org/cmake/help/latest/command/find_package.html) in *config mode* to import the package.
 
 The package has to be named `<package_name>-<version>[-<target_os>][-<target_arch>][-<target_compiler>].zip` where `<target_os>`, `<target_arch>` and `<target_compiler>` can be omitted from the package file name using the options `NO_OS`, `NO_ARCH` and `NO_COMPILER`. `<target_os>`, `<target_arch>` and `<target_compiler>` are automatically detected in the local build environment.
 
@@ -326,13 +326,14 @@ The function adds the export of installed targets or targets exported with `depl
 
 ## CDeploy Options
 
-These options can be set before `include(CDeploy)` to configure the package creation.
+These options can be set before `include(CDeploy)` to configure the package creation or package downloading.
 
 * `CDEPLOY_NO_DEBUG_BUILD` - Disable the debug build generation when creating a package with Visual Studio. This should be set if a debug build is not required or if the debug build is already included in the package with other build rules.
 * `CDEPLOY_NO_OS` - Do not include the operating name in the package name. This is usually combined with `CDEPLOY_NO_ARCH` and `CDEPLOY_NO_COMPILER` to create an interface library package or a package that provides some other resources that can be used independently of the operating system. Such a package can be deployed with `deploy_package` using the `NO_OS`, `NO_ARCH` and `NO_COMPILER` options.
 * `CDEPLOY_NO_ARCH` - Do not include the package architecture in the package name. Such a package can be deployed with `deploy_package` using the `NO_ARCH` option.
 * `CDEPLOY_NO_COMPILER` - Do not include package compiler name and version in the package name. Such a package can be deployed with `deploy_package` using the `NO_COMPILER` option.
 * `CDEPLOY_CACHE_DIR` - Store downloaded packages in the given directory. The cache directory can also be set using an environment variable with the same name. The default value is `~/.cmake/downloadcache`.
+* `CDEPLOY_REPOSITORY` - The repository URL to be used when it was left blank in the `deploy_package` command. It can also be set using an environment variable with the same name.
 
 ## Dealing with Diamond Dependency Problems
 
