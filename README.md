@@ -54,9 +54,9 @@ Everything should be packaged in one directory with a unique name. This director
 
 CDeploy packages can be created in various ways:
 
-* directly with CMake using exported targets and CPack (which is the preferred way).
+* directly with CMake using exported targets and CPack.
 * from an external project that is built with or without CMake.
-* from an external project with self provided CMake build rules.
+* from an external project and your own CMake build rules.
 
 Some projects may already produce a CDeploy compatible package that just need to be renamed to match the package naming conventions.
 
@@ -198,7 +198,7 @@ The package can be built with:
 cmake --build /your/project/dir --target package
 ```
 
-### From an External Project with Customized Build Rules
+### From an External Project with Your Own CMake Build Rules
 
 If an external project is not build with CMake, it might be easier to provide your own `CMakeLists.txt` file to compile the project with CMake instead of using its native build tool chain and repacking its artifacts. [ExternalProject_Add](https://cmake.org/cmake/help/latest/module/ExternalProject.html) can be used to import the sources of the external project. 
 
