@@ -6,7 +6,6 @@ CDeploy is a simple CMake centric package manager and package format. It provide
 
 There is no global repository for packages, but if you are already familiar with modern CMake there is not much you need to learn to create your own CDeploy packages for your project. The idea is that each project maintains its own file server for dependencies unless they can be downloaded directly from another projects that provide CDeploy compatible packages.
 
-
 ## Example
 
 Add the [CDeploy](/CDeploy) file to your CMake project and create a `CMakeLists.txt` file like this:
@@ -298,6 +297,7 @@ deploy_export(<name> (INTERFACE | LIBRARY STATIC | LIBRARY SHARED | EXECUTABLE)
     [CONFIGURATION (Release | Debug)]
     [IMPORTED_IMPLIB <path>]
     [INTERFACE_INCLUDE_DIRECTORIES <dir> ...]
+    [INTERFACE_SOURCES <source> ...]
     [PROPERTIES <name> <value> ... ])
 ```
 
@@ -307,6 +307,7 @@ The function declares that an interface library (`INTERFACE`), static library (`
 * `CONFIGURATION` can be used in Visual Studio builds with `CDEPLOY_NO_DEBUG_BUILD` option to declare if the exported library or executable is the Debug or Release version.
 * `IMPORTED_IMPLIB` sets the relative location in the generated package to a import library of a shared library.
 * `INTERFACE_INCLUDE_DIRECTORIES` sets the relative location to include directories of a interface, static or shared library in the generated package.
+* `INTERFACE_SOURCES` sets the relative location to interface source files of an imported interface library in the generated package.
 * `PROPERTIES` sets additional properties (like `INTERFACE_LINK_LIBRARIES` etc.) of a imported library when it is deployed.
 
 #### `deploy_export_dependency`
