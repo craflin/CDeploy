@@ -1,6 +1,6 @@
 
 #include <MyLib.hpp>
-#include <nstd/Console.h>
+#include <nstd/Console.hpp>
 
 int main()
 {

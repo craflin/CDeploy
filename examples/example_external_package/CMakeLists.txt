@@ -3,6 +3,8 @@ cmake_policy(SET CMP0048 NEW)
 
 project(libnstd VERSION 0.1.0)
 
+set(CDEPLOY_NO_DEBUG_BUILD True)
+
 include(../../CDeploy)
 include(CPack)
 include(ExternalProject)
