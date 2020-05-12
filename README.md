@@ -298,6 +298,10 @@ deploy_export(<name> (INTERFACE | LIBRARY STATIC | LIBRARY SHARED | EXECUTABLE)
     [IMPORTED_IMPLIB <path>]
     [INTERFACE_INCLUDE_DIRECTORIES <dir> ...]
     [INTERFACE_SOURCES <source> ...]
+    [INTERFACE_COMPILE_DEFINITIONS <definition> ...]
+    [INTERFACE_COMPILE_FEATURES <feature> ...]
+    [INTERFACE_COMPILE_OPTIONS <option> ...]
+    [INTERFACE_LINK_LIBRARIES <library> ...]
     [PROPERTIES <name> <value> ... ])
 ```
 
@@ -308,7 +312,11 @@ The function declares that an interface library (`INTERFACE`), static library (`
 * `IMPORTED_IMPLIB` sets the relative location in the generated package to a import library of a shared library.
 * `INTERFACE_INCLUDE_DIRECTORIES` sets the relative location to include directories of a interface, static or shared library in the generated package.
 * `INTERFACE_SOURCES` sets the relative location to interface source files of an imported interface library in the generated package.
-* `PROPERTIES` sets additional properties (like `INTERFACE_LINK_LIBRARIES` etc.) of a imported library when it is deployed.
+* `INTERFACE_COMPILE_DEFINITIONS` sets the `INTERFACE_COMPILE_DEFINITIONS` property of the imported target.
+* `INTERFACE_COMPILE_FEATURES` sets the `INTERFACE_COMPILE_FEATURES` property of the imported target.
+* `INTERFACE_COMPILE_OPTIONS` sets the `INTERFACE_COMPILE_OPTIONS` property of the imported target.
+* `INTERFACE_LINK_LIBRARIES` sets the `INTERFACE_LINK_LIBRARIES` property of the imported target.
+* `PROPERTIES` sets additional properties  of a imported library when it is deployed.
 
 #### `deploy_export_dependency`
 
