@@ -39,11 +39,11 @@ target_link_libraries(example_binary
 * `<version>` is a generic version string
 * `<os>` is the target operating system or distribution name and version
 * `<arch>` is the target architecture (x86, x64, ppc64, etc.)
-* `<compiler>` is a shorted name of the compiler with version number (gcc7.2, vs2015, etc.)
+* `<compiler>` is a shorted name of the compiler with version number (gcc7, vs2015, etc.)
 
 Example:
 
-libxml2-2.7.8-ubuntu16.04-x64-gcc7.2.zip
+libxml2-2.7.8-ubuntu18.04-x64-gcc7.zip
 
 ### Package Contents
 
