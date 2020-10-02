@@ -5,7 +5,7 @@ function(deploy_package package version)
 
     set(options NO_OS NO_ARCH NO_COMPILER NO_CACHE)
     set(oneValueArgs)
-    set(multiValueArgs)
+    set(multiValueArgs COMPONENTS)
     cmake_parse_arguments(_ "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     if(MSVC)
@@ -17,8 +17,13 @@ function(deploy_package package version)
         endforeach()
     endif()
 
+    set(find_package_args)
+    if(__COMPONENTS)
+        list(APPEND find_package_args COMPONENTS ${__COMPONENTS})
+    endif()
+
     if(NOT __NO_CACHE)
-        find_package(${package} ${version} EXACT QUIET CONFIG NO_DEFAULT_PATH)
+        find_package(${package} ${version} EXACT QUIET CONFIG ${find_package_args} NO_DEFAULT_PATH)
     endif()
 
     if(NOT ${package}_FOUND)
@@ -99,6 +104,7 @@ function(deploy_package package version)
         set(package_folder "${CMAKE_BINARY_DIR}/${_extract_dir}")
 
         find_package(${package} ${version} EXACT QUIET CONFIG REQUIRED
+            ${find_package_args}
             PATHS "${package_folder}" NO_DEFAULT_PATH
         )
 

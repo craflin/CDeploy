@@ -278,10 +278,10 @@ Alternatively, you can configure the project with `-DCDEPLOY_DEBUG_BUILD=ON` to 
 
 ```
 deploy_package(<package_name> <version> [<repository_url>]
-    [NO_OS] [NO_ARCH] [NO_COMPILER] [NO_CACHE])
+    [NO_OS] [NO_ARCH] [NO_COMPILER] [NO_CACHE] [COMPONENTS components...])
 ```
 
-The function downloads and unpacks a package file from the HTTP folder `<repository_url>` or an URL defined with `CDEPLOY_REPOSITORY` into the binary folder (`CMAKE_BINARY_DIR`) and uses CMake's [find_package](https://cmake.org/cmake/help/latest/command/find_package.html) in *config mode* to import the package.
+The function downloads and unpacks a package file from the HTTP folder `<repository_url>` or an URL defined with `CDEPLOY_REPOSITORY` into the binary folder (`CMAKE_BINARY_DIR`) and uses CMake's [find_package](https://cmake.org/cmake/help/latest/command/find_package.html) in *config mode* to import the package. The optional `COMPONENTS` parameter is passed on to `find_package`.
 
 The package has to be named `<package_name>-<version>[-<target_os>][-<target_arch>][-<target_compiler>].zip` where `<target_os>`, `<target_arch>` and `<target_compiler>` can be omitted from the package file name using the options `NO_OS`, `NO_ARCH` and `NO_COMPILER`. `<target_os>`, `<target_arch>` and `<target_compiler>` are automatically detected in the local build environment.
 
