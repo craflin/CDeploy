@@ -27,9 +27,15 @@ macro(deploy_package package version)
     if(_deploy_package_COMPONENTS)
         list(APPEND _deploy_package_find_package_args COMPONENTS ${_deploy_package_COMPONENTS})
     endif()
+    
+    if("${version}" MATCHES "[^\\-]+-.+")
+        string(REGEX REPLACE "([^\\-]+)-.+" "\\1" _deploy_package_find_version "${version}")
+    else()
+        set(_deploy_package_find_version "${version}")
+    endif()
 
     if(NOT _deploy_package_NO_CACHE)
-        find_package(${package} ${version} EXACT QUIET CONFIG ${_deploy_package_find_package_args} NO_DEFAULT_PATH)
+        find_package(${package} ${_deploy_package_find_version} EXACT QUIET CONFIG ${_deploy_package_find_package_args} NO_DEFAULT_PATH)
     endif()
 
     if(NOT ${package}_FOUND)
@@ -118,7 +124,7 @@ macro(deploy_package package version)
         
         _deploy_package_download()
 
-        find_package(${package} ${version} EXACT QUIET CONFIG REQUIRED
+        find_package(${package} ${_deploy_package_find_version} EXACT QUIET CONFIG REQUIRED
             ${_deploy_package_find_package_args}
             PATHS "${_deploy_package_package_folder}" NO_DEFAULT_PATH
         )
@@ -212,6 +218,9 @@ get_target_os(CDEPLOY_OS)
 set(CPACK_GENERATOR "ZIP")
 string(TOLOWER "${PROJECT_NAME}" CPACK_PACKAGE_FILE_NAME)
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${PROJECT_VERSION}")
+if(CDEPLOY_PACKAGE_REVISION)
+    set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${CDEPLOY_PACKAGE_REVISION}")
+endif()
 if(NOT CDEPLOY_NO_OS)
     set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${CDEPLOY_OS}")
 endif()

@@ -36,7 +36,8 @@ target_link_libraries(example_binary
 `<name>-<version>[-<os>][-<arch>][-<compiler>].zip`
 
 * `<name>` is the name in lower case of the imported product
-* `<version>` is a generic version string
+* `<version>` is a generic version string with an optional package revision tag (e.g. 2.9.10-3)
+* `<revision>` is a package revision string (like 1, 2, 3, ...)
 * `<os>` is the target operating system or distribution name and version
 * `<arch>` is the target architecture (x86, x64, ppc64, etc.)
 * `<compiler>` is a shorted name of the compiler with version number (gcc7, vs2015, etc.)
@@ -338,6 +339,7 @@ The function adds the export of installed targets or targets exported with `depl
 
 These options can be set before `include(CDeploy)` to configure the package creation or package downloading.
 
+* `CDEPLOY_PACKAGE_REVISION` - Add the given package revision tag to the version number of the generated package.
 * `CDEPLOY_NO_DEBUG_BUILD` - Disable the debug build generation when creating a package with Visual Studio. This should be set if a debug build is not required or if the debug build is already included in the package with other build rules.
 * `CDEPLOY_NO_OS` - Do not include the operating name in the package name. This is usually combined with `CDEPLOY_NO_ARCH` and `CDEPLOY_NO_COMPILER` to create an interface library package or a package that provides some other resources that can be used independently of the operating system. Such a package can be deployed with `deploy_package` using the `NO_OS`, `NO_ARCH` and `NO_COMPILER` options.
 * `CDEPLOY_NO_ARCH` - Do not include the package architecture in the package name. Such a package can be deployed with `deploy_package` using the `NO_ARCH` option.
