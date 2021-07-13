@@ -37,14 +37,13 @@ target_link_libraries(example_binary
 
 * `<name>` is the name in lower case of the imported product
 * `<version>` is a generic version string with an optional package revision tag (e.g. 2.9.10-3)
-* `<revision>` is a package revision string (like 1, 2, 3, ...)
 * `<os>` is the target operating system or distribution name and version
 * `<arch>` is the target architecture (x86, x64, ppc64, etc.)
 * `<compiler>` is a shorted name of the compiler with version number (gcc7, vs2015, etc.)
 
 Example:
 
-libxml2-2.7.8-ubuntu18.04-x64-gcc7.zip
+libxml2-2.7.8-3-ubuntu18.04-x64-gcc7.zip
 
 ### Package Contents
 
