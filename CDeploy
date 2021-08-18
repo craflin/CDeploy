@@ -141,7 +141,7 @@ function(get_target_arch var)
             else()
                 set(${var} x86)
             endif()
-        elseif(CMAKE_COMPILER_IS_GNUCC) # CMAKE_CXX_COMPILER_ARCHITECTURE_ID does not provide anything with MinGW compilers
+        elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") # CMAKE_CXX_COMPILER_ARCHITECTURE_ID does not provide the target arch with MinGW compilers
             execute_process(COMMAND "${CMAKE_CXX_COMPILER}" -v OUTPUT_VARIABLE GCC_VERSION_OUTPUT ERROR_VARIABLE GCC_VERSION_OUTPUT)
             if(GCC_VERSION_OUTPUT MATCHES ".*x86_64.*")
                 set(${var} x64)
